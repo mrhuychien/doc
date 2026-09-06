@@ -1,0 +1,25 @@
+node_modules
+.DS_Store
+dist
+dist-ssr
+*.local
+.env
+.nitro
+.tanstack
+.wrangler
+.output
+.vinxi
+__unconfig*
+todos.json
+
+# ─── Feed Tri Thức ───
+.env.local
+ingest/.venv/
+ingest/.cache/
+# Sách license 'personal' — không đẩy nguyên văn lên GitHub
+ingest/books/*/source.pdf
+ingest/books/*/chunks.json
+ingest/books/*/enriched.json
+ingest/books/*/review.csv
+ingest/books/*/frontmatter.txt
+ingest/books/*/parse_report.md

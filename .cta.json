@@ -1,0 +1,19 @@
+{
+  "projectName": "feed-tri-thuc",
+  "mode": "file-router",
+  "typescript": true,
+  "tailwind": true,
+  "packageManager": "npm",
+  "git": false,
+  "install": false,
+  "intent": false,
+  "addOnOptions": {},
+  "projectPreset": "default",
+  "includeExamples": false,
+  "routerOnly": false,
+  "version": 1,
+  "framework": "react",
+  "chosenAddOns": [
+    "vercel"
+  ]
+}

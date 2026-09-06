@@ -1,0 +1,6 @@
+pymupdf
+pdfplumber
+anthropic
+pyyaml
+python-dotenv
+supabase

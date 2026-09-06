@@ -1,0 +1,26 @@
+# Khai báo 1 cuốn sách cho parse_pdf.py.
+# Số trang ở đây là SỐ TRANG IN. Với cuốn này PDF page index == số trang in
+# (đã kiểm: trang in 115 = page 115), nên page_offset = 0.
+slug: chong-tham-nhung
+title: "Chống tham nhũng — Thí nghiệm tại Trung Quốc"
+author_slug: vuong-ho-ninh
+page_offset: 0
+
+pages:
+  frontmatter: [4, 10]     # lời dịch giả + lời tác giả + cấu trúc sách → frontmatter.txt
+  toc: [13, 16]            # mục lục — ground truth
+  body: [17, 266]          # thân sách
+  # 1–3 bìa, 11–12 trắng, 267–399 phụ lục pháp quy → bỏ hẳn
+
+expect:
+  chapters: 9
+  sections_per_chapter: [4, 5, 3, 4, 3, 6, 3, 6, 3]   # = 37
+  sections_auto_min: 35
+  chunks: [280, 380]
+
+chunk:
+  target_min: 250
+  target_max: 350
+  split_above: 450
+  min_part: 150
+  merge_below: 120

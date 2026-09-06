@@ -1,0 +1,15 @@
+# Ghim thủ công điểm bắt đầu của những mục KHÔNG có dòng heading trong thân sách.
+# parse_pdf.py đọc file này TRƯỚC khi dùng page_fallback.
+#
+# Hai mục đã biết là không có heading (nếu page_fallback bắt sai chỗ thì bỏ
+# comment và điền `starts_with` = vài từ đầu của đoạn mở mục):
+#
+# sections:
+#   - section: "6.5"
+#     page: 165
+#     starts_with: "..."
+#   - section: "8.5"
+#     page: 231
+#     starts_with: "..."
+
+sections: []
