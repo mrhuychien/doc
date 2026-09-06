@@ -1,17 +1,33 @@
-
 @import "tailwindcss";
 
-* {
-  box-sizing: border-box;
+/* ─── Design tokens (Blueprint §F) — không thêm màu ngoài 4 màu này ─── */
+@theme {
+  --color-paper:  #F7F5F0;
+  --color-ink:    #1F1D1A;
+  --color-accent: #8B5E34;
+  --color-muted:  #8A857D;
+
+  --font-heading: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
+  --font-body:    "Literata", ui-serif, Georgia, "Times New Roman", serif;
 }
 
-html,
-body,
-#app {
-  min-height: 100%;
-}
+* { box-sizing: border-box; }
+
+html, body { min-height: 100%; }
 
 body {
   margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
 }
 
+h1, h2, h3, button, label, input { font-family: var(--font-heading); }
+
+/* Animation duy nhất được phép: toggle "Ý chính". Không confetti, không thưởng. */
+@media (prefers-reduced-motion: no-preference) {
+  .idea-toggle { transition: opacity 150ms ease, max-height 150ms ease; }
+}

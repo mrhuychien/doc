@@ -23,3 +23,4 @@ ingest/books/*/enriched.json
 ingest/books/*/review.csv
 ingest/books/*/frontmatter.txt
 ingest/books/*/parse_report.md
+__pycache__/

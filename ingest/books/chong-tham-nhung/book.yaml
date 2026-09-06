@@ -24,3 +24,19 @@ chunk:
   split_above: 450
   min_part: 150
   merge_below: 120
+
+# ─── Chỉ cần cho cuốn MỚI (author/book chưa có trong DB) ───
+# Cuốn này đã seed sẵn trong migration 001 nên không cần hai khối dưới.
+# load.py đọc chúng để tạo hàng mới nếu slug chưa tồn tại.
+#
+# author:
+#   name: "Tên tác giả"
+#   name_native: "原名"
+#   born_year: 1955
+#   monogram: "AB"
+#   bio_short: ""
+# book:
+#   license: personal          # personal | public_domain
+#   year_original: 1990
+#   translator: "Tên dịch giả"
+#   pace_per_day: 5

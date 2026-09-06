@@ -1,3 +1,5 @@
 {
-  "target": "react"
+  "target": "react",
+  "routesDirectory": "./app/routes",
+  "generatedRouteTree": "./app/routeTree.gen.ts"
 }
