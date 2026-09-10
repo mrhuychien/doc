@@ -24,3 +24,4 @@ ingest/books/*/review.csv
 ingest/books/*/frontmatter.txt
 ingest/books/*/parse_report.md
 __pycache__/
+ingest/books/*/.studio.json

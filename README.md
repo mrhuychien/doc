@@ -30,9 +30,21 @@ npm run dev                       # → http://localhost:3000
    ```
 4. Auth → URL Configuration → thêm `http://localhost:3000` và domain Vercel vào Redirect URLs.
 
-## 3. Nạp 1 cuốn sách mới — đúng 3 lệnh
+## 3. Nạp 1 cuốn sách mới
 
-Chuẩn bị: `ingest/books/<slug>/source.pdf` (**PDF có text layer**, không phải bản scan).
+Chuẩn bị: một file **PDF có text layer** (không phải bản scan — pipeline không OCR).
+
+### Cách A — Ingest Studio (có giao diện)
+
+```bash
+ingest/.venv/bin/python ingest/studio.py     # → http://127.0.0.1:8765
+```
+
+Kéo thả PDF vào, chọn khoảng trang (có xem trước nội dung từng trang để biết mục lục nằm ở đâu), rồi bấm qua 4 bước: parse → duyệt GATE A → chạy thử 5 chunk → duyệt GATE B → enrich toàn bộ → nạp Supabase. Sửa `idea_summary` và 3 câu hỏi ngay trong bảng, không cần mở Excel.
+
+Studio **chạy trên máy bạn, không deploy**: nó đọc `.env.local` (có service role key và Anthropic key) và chạy lệnh trên máy — chỉ bind `127.0.0.1`, đừng bao giờ expose ra ngoài. Nó chỉ gọi ba script dưới qua subprocess, không tự parse và không tự gọi LLM.
+
+### Cách B — 3 lệnh CLI
 
 ```bash
 cd ingest && source .venv/bin/activate     # lần đầu: python3.12 -m venv .venv && pip install -r requirements.txt
@@ -42,13 +54,15 @@ python enrich.py     books/<slug>/chunks.json     # → enriched.json + review.c
 python load.py       books/<slug>/enriched.json   # → Supabase (idempotent theo (book_id, seq))
 ```
 
-Giữa bước 1 và 2: **đọc `parse_report.md`**. Giữa bước 2 và 3: mở `review.csv` bằng Excel, sửa tay `idea_summary` / câu hỏi nào chướng — `load.py` ưu tiên giá trị trong CSV.
+Giữa bước 1 và 2: **đọc `parse_report.md`**. Giữa bước 2 và 3: chạy `enrich.py --dry-run` xem thử 5 chunk, rồi mở `review.csv` bằng Excel sửa tay câu nào chướng — `load.py` ưu tiên giá trị trong CSV.
 
-Mỗi bước ghi ra đúng 1 file, chạy lại được độc lập. `enrich.py` có cache theo `sha1(text)` trong `ingest/.cache/` nên chạy lại không tốn thêm tiền API.
+Hai cách dùng chung một pipeline và cùng bộ file. Mỗi bước ghi ra đúng 1 file, chạy lại được độc lập. `enrich.py` cache theo `sha1(text)` trong `ingest/.cache/` nên chạy lại không tốn thêm tiền API; sửa `prompts/*.md` thì cache tự hỏng.
 
 ### Cấu hình cho từng cuốn
 
-`ingest/books/<slug>/book.yaml` khai báo phạm vi trang và kỳ vọng cấu trúc (mục lục, số chương/mục). `overrides.yaml` (tuỳ chọn) ghim thủ công những mục không có heading trong thân sách.
+`ingest/books/<slug>/book.yaml` khai báo phạm vi trang và kỳ vọng cấu trúc (mục lục, số chương/mục) — Studio sinh file này từ form, hoặc bạn viết tay. `overrides.yaml` (tuỳ chọn) ghim thủ công những mục không có heading trong thân sách.
+
+**Đừng bỏ trống phần `expect:`.** Đó là lưới an toàn: `parse_pdf.py` fail loud khi số chương/mục bắt được không khớp mục lục, thay vì im lặng nạp một cuốn sách thiếu chương.
 
 ---
 
@@ -81,9 +95,12 @@ app/                      # TanStack Start (srcDirectory = "app")
   lib/tracking.ts         # reading_event qua IntersectionObserver
   styles/app.css          # Tailwind v4 @theme tokens
 ingest/                   # parse_pdf.py · enrich.py · load.py · prompts/
+  studio.py + studio.html # Ingest Studio — UI nạp sách, chạy local, KHÔNG deploy
 supabase/migrations/      # 001_init.sql — 7 bảng + RLS + seed
 ```
 
 ## 6. Deploy
 
-Push GitHub → import vào Vercel (framework tự nhận `tanstack-start` qua `vercel.json`) → set env `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`. Ingest **chỉ chạy local** — service role key và Anthropic key không bao giờ lên Vercel.
+Push GitHub → import vào Vercel (framework tự nhận `tanstack-start` qua `vercel.json`) → set env `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
+
+Ingest và Ingest Studio **chỉ chạy local** — service role key (bypass sạch RLS) và Anthropic key không bao giờ lên Vercel. App deploy chỉ có đúng 2 route: `/` và `/login`.

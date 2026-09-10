@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ingest Studio — Feed Tri Thức</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600&family=Literata:opsz,wght@7..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F7F5F0; --ink:#1F1D1A; --accent:#8B5E34; --muted:#8A857D;
+  --line:rgba(138,133,125,.28);
+  --head:"Be Vietnam Pro",ui-sans-serif,system-ui,sans-serif;
+  --body:"Literata",ui-serif,Georgia,serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--head);font-size:14px;line-height:1.55}
+button{font:inherit;cursor:pointer;background:none;border:1px solid var(--line);color:inherit;padding:.4rem .8rem;border-radius:2px}
+button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+button:disabled{opacity:.35;cursor:not-allowed}
+button.primary{border-color:var(--accent);color:var(--accent)}
+button.solid{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+button.solid:hover:not(:disabled){opacity:.88;color:var(--paper)}
+input,select,textarea{font:inherit;background:transparent;border:1px solid var(--line);color:inherit;padding:.35rem .5rem;border-radius:2px;width:100%}
+textarea{font-family:var(--body);resize:vertical}
+a{color:var(--accent)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+
+.wrap{display:grid;grid-template-columns:270px 1fr;min-height:100vh}
+aside{border-right:1px solid var(--line);padding:1.1rem .9rem;position:sticky;top:0;height:100vh;overflow:auto}
+main{padding:1.6rem 2rem;max-width:1080px}
+h1{font-size:15px;margin:0 0 .15rem}
+h2{font-size:16px;margin:0 0 .2rem}
+h3{font-size:13px;margin:1.4rem 0 .5rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.sub{color:var(--muted);font-size:12px;margin:0 0 1.2rem}
+.local{display:inline-block;border:1px solid var(--line);padding:.05rem .4rem;border-radius:2px;font-size:10.5px;letter-spacing:.05em;color:var(--muted)}
+
+.blist{list-style:none;margin:.8rem 0 0;padding:0}
+.blist li{margin-bottom:.2rem}
+.blist button{width:100%;text-align:left;border:1px solid transparent;padding:.45rem .5rem}
+.blist button.on{border-color:var(--line);background:rgba(139,94,52,.06)}
+.blist .t{display:block;font-weight:600;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dots{margin-top:.2rem;display:flex;gap:.25rem;align-items:center}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dot.on{background:var(--accent)}
+.dot.warn{background:var(--muted)}
+
+.card{border:1px solid var(--line);border-radius:3px;padding:1rem 1.1rem;margin-bottom:1rem}
+.card.dim{opacity:.5}
+.card header{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem}
+.step{width:22px;height:22px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;font-size:12px;flex:0 0 auto}
+.step.ok{border-color:var(--accent);color:var(--accent)}
+.grow{flex:1}
+.row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.muted{color:var(--muted)}
+.err{color:#9a3412}
+
+pre.log{background:rgba(31,29,26,.045);border:1px solid var(--line);padding:.7rem .8rem;max-height:300px;overflow:auto;white-space:pre-wrap;word-break:break-word;margin:.6rem 0 0}
+.md{font-family:var(--body);font-size:14.5px;max-height:520px;overflow:auto;border:1px solid var(--line);padding:.9rem 1rem;margin-top:.6rem}
+.md h1,.md h2{font-family:var(--head);font-size:15px;margin:1.1rem 0 .4rem}
+.md h3{font-size:12.5px;margin:1rem 0 .3rem}
+.md table{border-collapse:collapse;width:100%;font-size:12.5px;font-family:var(--head)}
+.md th,.md td{border:1px solid var(--line);padding:.25rem .5rem;text-align:left}
+.md pre{background:rgba(31,29,26,.05);padding:.6rem;overflow:auto;white-space:pre-wrap}
+.md code{background:rgba(31,29,26,.06);padding:.05rem .25rem}
+.md ul{padding-left:1.2rem}
+
+table.grid{border-collapse:collapse;width:100%;font-size:12.5px}
+table.grid th,table.grid td{border:1px solid var(--line);padding:.3rem .45rem;vertical-align:top}
+table.grid th{background:rgba(31,29,26,.04);text-align:left;position:sticky;top:0}
+table.grid td input,table.grid td textarea{border:none;padding:.15rem;background:transparent}
+table.grid td input:focus,table.grid td textarea:focus{outline:1px solid var(--accent)}
+.scroll{max-height:60vh;overflow:auto;border:1px solid var(--line)}
+
+.drop{border:1.5px dashed var(--line);border-radius:4px;padding:2.6rem 1rem;text-align:center;color:var(--muted)}
+.drop.hot{border-color:var(--accent);color:var(--accent)}
+.pages{max-height:320px;overflow:auto;border:1px solid var(--line);font-size:12.5px}
+.pages div{display:grid;grid-template-columns:52px 58px 1fr;gap:.5rem;padding:.2rem .5rem;border-bottom:1px solid var(--line)}
+.pages div:hover{background:rgba(139,94,52,.07)}
+.pages b{font-weight:600}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.7rem}
+.fields label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:.2rem}
+.toast{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:.5rem 1rem;border-radius:3px;font-size:13px;z-index:9}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside>
+    <h1>Ingest Studio <span class="local">LOCAL</span></h1>
+    <p class="sub">Nạp sách vào Feed Tri Thức</p>
+    <button class="primary" style="width:100%" onclick="newBook()">＋ Thêm sách</button>
+    <ul class="blist" id="blist"></ul>
+    <p class="sub" style="margin-top:1.4rem;font-size:11px">
+      Chạy trên máy bạn. Không deploy. Ba lệnh CLI trong README vẫn dùng được như cũ.
+    </p>
+  </aside>
+  <main id="main"></main>
+</div>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s)
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+let S = { books: [], slug: null, mode: 'book', pages: [], total: 0, draft: null, review: null, page: 0 }
+
+async function api(path, opts = {}) {
+  const r = await fetch(path, opts)
+  const j = await r.json().catch(() => ({ error: 'phản hồi không phải JSON' }))
+  if (!r.ok) throw new Error(j.error || r.statusText)
+  return j
+}
+function toast(msg, ms = 2600) {
+  const el = document.createElement('div'); el.className = 'toast'; el.textContent = msg
+  document.body.appendChild(el); setTimeout(() => el.remove(), ms)
+}
+const book = () => S.books.find((b) => b.slug === S.slug)
+
+// ── markdown tối giản, đủ cho parse_report.md ──────────────────
+function md(src) {
+  const out = []; let i = 0; const L = src.split('\n')
+  const inline = (t) => esc(t).replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/_([^_]+)_/g, '<em>$1</em>')
+  while (i < L.length) {
+    const l = L[i]
+    if (l.startsWith('```')) { const b = []; i++; while (i < L.length && !L[i].startsWith('```')) b.push(L[i++]); i++; out.push('<pre>' + esc(b.join('\n')) + '</pre>'); continue }
+    let m = l.match(/^(#{1,4})\s+(.*)/)
+    if (m) { const n = Math.min(3, m[1].length); out.push(`<h${n}>${inline(m[2])}</h${n}>`); i++; continue }
+    if (/^\s*\|.*\|\s*$/.test(l) && /^\s*\|[-:\s|]+\|\s*$/.test(L[i + 1] || '')) {
+      const cells = (r) => r.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim())
+      const head = cells(l); i += 2; const rows = []
+      while (i < L.length && /^\s*\|.*\|\s*$/.test(L[i])) rows.push(cells(L[i++]))
+      out.push('<table><thead><tr>' + head.map((h) => `<th>${inline(h)}</th>`).join('') + '</tr></thead><tbody>'
+        + rows.map((r) => '<tr>' + r.map((c) => `<td>${inline(c)}</td>`).join('') + '</tr>').join('') + '</tbody></table>')
+      continue
+    }
+    if (/^\s*[-*]\s+/.test(l)) { const b = []; while (i < L.length && /^\s*[-*]\s+/.test(L[i])) b.push(L[i++].replace(/^\s*[-*]\s+/, '')); out.push('<ul>' + b.map((x) => `<li>${inline(x)}</li>`).join('') + '</ul>'); continue }
+    if (!l.trim()) { i++; continue }
+    out.push(`<p>${inline(l)}</p>`); i++
+  }
+  return out.join('')
+}
+
+// ── job runner ─────────────────────────────────────────────────
+async function run(step, logEl, after) {
+  const btns = [...document.querySelectorAll('main button')]; btns.forEach((b) => (b.disabled = true))
+  logEl.textContent = ''
+  try {
+    const { job } = await api(`/api/books/${S.slug}/run`, { method: 'POST', body: JSON.stringify({ step }) })
+    let since = 0
+    for (;;) {
+      const j = await api(`/api/jobs/${job}?since=${since}`)
+      if (j.log.length) { logEl.textContent += j.log.join('\n') + '\n'; logEl.scrollTop = logEl.scrollHeight }
+      since = j.total
+      if (j.done) {
+        S.books = S.books.map((b) => (b.slug === j.book.slug ? j.book : b))
+        logEl.textContent += j.code === 0 ? '\n— xong —' : `\n— thoát với mã ${j.code} —`
+        after && after(j.code)
+        break
+      }
+      await new Promise((r) => setTimeout(r, 700))
+    }
+  } catch (e) { logEl.textContent += '\n‼ ' + e.message }
+  render()
+}
+
+// ── thêm sách ──────────────────────────────────────────────────
+function newBook() { S.mode = 'new'; S.slug = null; S.draft = { slug: '', title: '', pages: null }; S.pages = []; render() }
+
+async function uploadPdf(file) {
+  const slug = (S.draft.slug || S.draft.title || file.name.replace(/\.pdf$/i, '')).trim()
+  if (!slug) return toast('Điền tên sách trước đã')
+  $('#dropmsg').textContent = `Đang nạp ${file.name} (${(file.size / 1e6).toFixed(1)} MB)…`
+  try {
+    const j = await api(`/api/books/${encodeURIComponent(slug)}/pdf`, { method: 'POST', body: file })
+    S.draft.slug = j.book.slug; S.total = j.total_pages
+    S.books = [...S.books.filter((b) => b.slug !== j.book.slug), j.book].sort((a, b) => a.slug < b.slug ? -1 : 1)
+    await loadPages(1)
+    toast(`Đã nạp ${j.total_pages} trang`)
+  } catch (e) { $('#dropmsg').innerHTML = `<span class="err">${esc(e.message)}</span>` }
+  render()
+}
+async function loadPages(from) {
+  const j = await api(`/api/books/${S.draft.slug}/pages?from=${from}&n=60`)
+  S.total = j.total; S.pages = j.pages; render()
+}
+function pick(field, idx) {
+  const el = $(`#f_${field}${idx}`); if (el) { el.value = ''; el.focus(); toast('Bấm số trang trong danh sách bên trái') }
+}
+function usePage(p) {
+  const t = document.activeElement
+  if (t && t.id && t.id.startsWith('f_')) { t.value = p; t.dispatchEvent(new Event('input')) }
+  else toast('Bấm vào ô số trang trước, rồi bấm trang')
+}
+async function createBook() {
+  const num = (id, d = 0) => { const v = parseInt($('#' + id).value, 10); return Number.isFinite(v) ? v : d }
+  const secs = $('#f_sections').value.trim()
+  let sections = []
+  if (secs) { try { sections = JSON.parse(secs.startsWith('[') ? secs : '[' + secs + ']') } catch { return toast('Số mục/chương phải là danh sách số, vd 4,5,3') } }
+  const payload = {
+    slug: S.draft.slug, title: $('#f_title').value.trim() || S.draft.slug,
+    author_name: $('#f_author').value.trim(), author_native: $('#f_native').value.trim(),
+    born_year: num('f_born', 0) || null, translator: $('#f_translator').value.trim(),
+    year_original: num('f_year', 0) || null, license: $('#f_license').value,
+    page_offset: num('f_offset', 0),
+    frontmatter: [num('f_fm0', 1), num('f_fm1', 1)],
+    toc: [num('f_toc0', 1), num('f_toc1', 1)],
+    body: [num('f_body0', 1), num('f_body1', 1)],
+    chapters: sections.length, sections_per_chapter: sections,
+    chunks_min: num('f_cmin', 0), chunks_max: num('f_cmax', 99999),
+  }
+  try {
+    const j = await api('/api/books', { method: 'POST', body: JSON.stringify(payload) })
+    S.books = [...S.books.filter((b) => b.slug !== j.slug), j.book].sort((a, b) => a.slug < b.slug ? -1 : 1)
+    S.slug = j.slug; S.mode = 'book'; toast('Đã tạo book.yaml'); render()
+  } catch (e) { toast('Lỗi: ' + e.message, 5000) }
+}
+
+// ── duyệt review.csv ───────────────────────────────────────────
+async function openReview() {
+  const j = await api(`/api/books/${S.slug}/review`); S.review = j.rows; S.page = 0; render()
+}
+async function saveReview() {
+  await api(`/api/books/${S.slug}/review`, { method: 'PUT', body: JSON.stringify({ rows: S.review }) })
+  toast(`Đã lưu review.csv (${S.review.length} dòng)`)
+}
+async function showChunk(seq) {
+  const j = await api(`/api/books/${S.slug}/chunk?seq=${seq}`)
+  $('#src').innerHTML = `<h3>Đoạn gốc — seq ${seq}</h3><div class="md">${j.text.split('\n\n').map((p) => `<p>${esc(p)}</p>`).join('')}</div>`
+  $('#src').scrollIntoView({ block: 'nearest' })
+}
+function edit(i, k, v) { S.review[i][k] = v }
+
+// ── render ─────────────────────────────────────────────────────
+function sidebar() {
+  $('#blist').innerHTML = S.books.map((b) => {
+    const d = (on, w) => `<span class="dot ${on ? 'on' : (w ? 'warn' : '')}"></span>`
+    return `<li><button class="${b.slug === S.slug && S.mode === 'book' ? 'on' : ''}" onclick="S.slug='${b.slug}';S.mode='book';S.review=null;render()">
+      <span class="t">${esc(b.title)}</span>
+      <span class="dots">${d(b.has_pdf)}${d(b.has_chunks, b.has_pdf)}${d(b.gate_a)}${d(b.has_enriched)}${d(b.loaded_at)}
+        <span class="muted" style="font-size:11px;margin-left:.3rem">${b.stats.chunks ? b.stats.chunks + ' chunk' : (b.has_pdf ? b.pdf_mb + ' MB' : 'trống')}</span></span>
+    </button></li>`
+  }).join('') || '<li class="sub">Chưa có sách nào.</li>'
+}
+
+function viewNew() {
+  const d = S.draft
+  return `
+  <h2>Thêm sách</h2>
+  <p class="sub">PDF phải có text layer (không phải bản scan). Studio không OCR.</p>
+
+  <div class="card">
+    <header><span class="step">1</span><b>Tên sách & file PDF</b></header>
+    <div class="fields" style="margin-bottom:.8rem">
+      <div><label>Tên sách</label><input id="f_title" value="${esc(d.title)}" oninput="S.draft.title=this.value" placeholder="Chống tham nhũng — Thí nghiệm tại Trung Quốc"></div>
+      <div><label>Slug (thư mục)</label><input id="f_slug" value="${esc(d.slug)}" oninput="S.draft.slug=this.value" placeholder="tự sinh từ tên sách"></div>
+    </div>
+    <div class="drop" id="drop" ondragover="event.preventDefault();this.classList.add('hot')" ondragleave="this.classList.remove('hot')"
+         ondrop="event.preventDefault();this.classList.remove('hot');uploadPdf(event.dataTransfer.files[0])">
+      <p id="dropmsg">${d.slug && S.total ? `✓ đã nạp <b>${S.total}</b> trang` : 'Kéo thả file PDF vào đây'}</p>
+      <input type="file" accept="application/pdf" style="width:auto" onchange="uploadPdf(this.files[0])">
+    </div>
+  </div>
+
+  ${!S.pages.length ? '' : `
+  <div class="card">
+    <header><span class="step">2</span><b>Chọn khoảng trang</b>
+      <span class="grow"></span>
+      <span class="muted">${S.total} trang</span>
+    </header>
+    <p class="sub">Bấm vào ô số trang bên phải, rồi bấm một dòng bên trái để điền. Số ở đây là <b>số trang in</b>.</p>
+    <div class="row" style="align-items:flex-start;gap:1.2rem">
+      <div style="flex:1 1 380px">
+        <div class="row" style="margin-bottom:.4rem">
+          <button onclick="loadPages(${Math.max(1, (S.pages[0]?.page || 1) - 60)})">← trước</button>
+          <button onclick="loadPages(${(S.pages[S.pages.length - 1]?.page || 1) + 1})">sau →</button>
+          <span class="muted">trang ${S.pages[0]?.page}–${S.pages[S.pages.length - 1]?.page}</span>
+        </div>
+        <div class="pages">${S.pages.map((p) => `<div onclick="usePage(${p.page})"><b>${p.page}</b><span class="muted">${p.words} từ</span><span>${esc(p.head) || '<i class="muted">(trống)</i>'}</span></div>`).join('')}</div>
+      </div>
+      <div style="flex:1 1 300px">
+        <div class="fields">
+          <div><label>Lời tựa / lời dịch giả — từ</label><input id="f_fm0" type="number" value="4"></div>
+          <div><label>đến</label><input id="f_fm1" type="number" value="10"></div>
+          <div><label>Mục lục — từ</label><input id="f_toc0" type="number" value="13"></div>
+          <div><label>đến</label><input id="f_toc1" type="number" value="16"></div>
+          <div><label>Thân sách — từ</label><input id="f_body0" type="number" value="17"></div>
+          <div><label>đến</label><input id="f_body1" type="number" value="${S.total}"></div>
+          <div><label>page_offset</label><input id="f_offset" type="number" value="0"></div>
+        </div>
+        <p class="sub" style="margin:.6rem 0 0">page_offset = (số thứ tự trang trong PDF) − (số trang in). Bằng 0 nếu trang in 115 nằm ở page 115.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <header><span class="step">3</span><b>Kỳ vọng cấu trúc</b></header>
+    <p class="sub">Lấy từ mục lục. parse_pdf.py dùng những số này để FAIL LOUD khi bắt hụt chương/mục — để trống là mất lưới an toàn.</p>
+    <div class="fields">
+      <div style="grid-column:1/-1"><label>Số mục của từng chương, cách nhau bằng dấu phẩy</label><input id="f_sections" placeholder="4,5,3,4,3,6,3,6,3"></div>
+      <div><label>Chunk tối thiểu</label><input id="f_cmin" type="number" value="0"></div>
+      <div><label>Chunk tối đa</label><input id="f_cmax" type="number" value="99999"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <header><span class="step">4</span><b>Tác giả & bản dịch</b> <span class="muted">— chỉ cần nếu tác giả chưa có trong DB</span></header>
+    <div class="fields">
+      <div><label>Tên tác giả</label><input id="f_author" placeholder="Vương Hỗ Ninh"></div>
+      <div><label>Tên gốc</label><input id="f_native" placeholder="王沪宁"></div>
+      <div><label>Năm sinh</label><input id="f_born" type="number" placeholder="1955"></div>
+      <div><label>Năm viết</label><input id="f_year" type="number" placeholder="1990"></div>
+      <div><label>Dịch giả</label><input id="f_translator" placeholder="Văn Dũng"></div>
+      <div><label>License</label><select id="f_license"><option value="personal">personal</option><option value="public_domain">public_domain</option></select></div>
+    </div>
+    <div class="row" style="margin-top:1rem">
+      <button class="solid" ${S.pages.length ? '' : 'disabled'} onclick="createBook()">Tạo book.yaml</button>
+      <span class="muted">Sau bước này sang chạy parse.</span>
+    </div>
+  </div>`}`
+}
+
+function viewBook() {
+  const b = book(); if (!b) return '<p class="muted">Chọn một cuốn ở cột trái.</p>'
+  const st = b.stats || {}
+  const ok = (c) => c ? 'ok' : ''
+  return `
+  <h2>${esc(b.title)}</h2>
+  <p class="sub"><code>ingest/books/${b.slug}/</code>${b.has_pdf ? ` · PDF ${b.pdf_mb} MB` : ' · <span class="err">chưa có source.pdf</span>'}${b.loaded_at ? ` · đã nạp Supabase ${b.loaded_at}` : ''}</p>
+
+  <div class="card ${b.has_pdf ? '' : 'dim'}">
+    <header><span class="step ${ok(b.has_chunks)}">1</span><b>Parse PDF → chunks.json</b>
+      <span class="grow"></span>
+      ${st.chunks ? `<span class="muted">${st.chunks} chunk · ${st.sections}/${(b.expect.sections_per_chapter || []).reduce((a, c) => a + c, 0) || '?'} mục (${st.sections_auto} auto · ${st.sections_page_fallback} fallback) · ${st.warnings} cảnh báo</span>` : ''}
+    </header>
+    <div class="row">
+      <button class="primary" ${b.has_pdf && b.has_yaml ? '' : 'disabled'} onclick="run('parse', $('#log1'), null)">Chạy parse</button>
+      ${b.has_report ? `<button onclick="openFile('parse_report.md')">Xem parse_report.md</button>` : ''}
+      <button onclick="openFile('overrides.yaml')">Sửa overrides.yaml</button>
+    </div>
+    <pre class="log" id="log1"></pre>
+    <div id="filebox"></div>
+    <div class="row" style="margin-top:.8rem">
+      <button class="${b.gate_a ? '' : 'solid'}" ${b.has_chunks ? '' : 'disabled'} onclick="gate('gate_a', ${!b.gate_a})">
+        ${b.gate_a ? '↺ Mở lại GATE A' : '✓ OK parse — duyệt GATE A'}
+      </button>
+      <span class="muted">${b.gate_a ? 'Đã duyệt. Chạy lại parse sẽ tự mở lại cả hai gate.' : 'Đọc parse_report trước khi duyệt: đủ chương/mục chưa, chunk nào < 150 hoặc > 450 từ.'}</span>
+    </div>
+  </div>
+
+  <div class="card ${b.gate_a ? '' : 'dim'}">
+    <header><span class="step ${ok(b.gate_b)}">2</span><b>Enrich thử 5 chunk — GATE B</b></header>
+    <div class="row">
+      <button class="primary" ${b.gate_a ? '' : 'disabled'} onclick="run('enrich_dry', $('#log2'), null)">Chạy thử (ContextCard + 5 chunk)</button>
+      <button class="${b.gate_b ? '' : 'solid'}" ${b.dry_ran ? '' : 'disabled'} onclick="gate('gate_b', ${!b.gate_b})">
+        ${b.gate_b ? '↺ Mở lại GATE B' : '✓ OK enrich — duyệt GATE B'}
+      </button>
+      ${b.dry_ran ? '' : '<span class="muted">Chạy thử xong mới duyệt được.</span>'}
+    </div>
+    <p class="sub" style="margin:.6rem 0 0">Không tốn tiền đáng kể: 6 call. Đọc kỹ 3 câu hỏi — sai giọng thì sửa <code>ingest/prompts/enrich.md</code> rồi chạy lại (cache tự hỏng khi prompt đổi).</p>
+    <pre class="log" id="log2"></pre>
+  </div>
+
+  <div class="card ${b.gate_b ? '' : 'dim'}">
+    <header><span class="step ${ok(b.has_enriched)}">3</span><b>Enrich toàn bộ → enriched.json + review.csv</b>
+      <span class="grow"></span>
+      ${st.enriched != null ? `<span class="muted">${st.enriched} chunk · lỗi ${st.enrich_failed} · cache hit ${st.cache_hits}</span>` : ''}
+    </header>
+    <div class="row">
+      <button class="primary" ${b.gate_b ? '' : 'disabled'} onclick="run('enrich', $('#log3'), null)">Chạy toàn bộ</button>
+      ${b.has_review ? '<button onclick="openReview()">Duyệt câu hỏi</button>' : ''}
+    </div>
+    <pre class="log" id="log3"></pre>
+  </div>
+
+  <div class="card ${b.has_enriched ? '' : 'dim'}">
+    <header><span class="step ${ok(b.loaded_at)}">4</span><b>Nạp lên Supabase</b></header>
+    <div class="row">
+      <button class="solid" ${b.has_enriched ? '' : 'disabled'} onclick="run('load', $('#log4'), null)">Chạy load</button>
+      <span class="muted">Idempotent theo (book_id, seq) — chạy lại không tạo trùng. Ưu tiên ô bạn sửa trong review.csv.</span>
+    </div>
+    <pre class="log" id="log4"></pre>
+  </div>
+
+  ${S.review ? reviewTable() : ''}
+  <div id="src"></div>`
+}
+
+function reviewTable() {
+  const per = 20, from = S.page * per, rows = S.review.slice(from, from + per)
+  const cell = (i, k, big) => big
+    ? `<textarea rows="3" oninput="edit(${i},'${k}',this.value)">${esc(S.review[i][k])}</textarea>`
+    : `<input value="${esc(S.review[i][k])}" oninput="edit(${i},'${k}',this.value)">`
+  return `
+  <h3>Duyệt câu hỏi — thay cho mở Excel</h3>
+  <div class="row" style="margin-bottom:.5rem">
+    <button ${S.page ? '' : 'disabled'} onclick="S.page--;render()">← trước</button>
+    <span class="muted">${from + 1}–${Math.min(from + per, S.review.length)} / ${S.review.length}</span>
+    <button ${from + per < S.review.length ? '' : 'disabled'} onclick="S.page++;render()">sau →</button>
+    <span class="grow"></span>
+    <button class="solid" onclick="saveReview()">Lưu review.csv</button>
+  </div>
+  <div class="scroll"><table class="grid">
+    <thead><tr><th style="width:44px">seq</th><th style="width:150px">vị trí</th><th style="width:230px">Ý chính (≤25 từ)</th><th>Q0 nhớ lại</th><th>Q1 áp dụng</th><th>Q2 liên kết</th></tr></thead>
+    <tbody>${rows.map((r, k) => { const i = from + k; return `<tr>
+      <td><b>${esc(r.seq)}</b><br><button style="padding:.1rem .3rem;font-size:11px;margin-top:.2rem" onclick="showChunk(${r.seq})">gốc</button></td>
+      <td class="muted">${esc(r.section_no)}<br>${esc(r.subpoint_title) || '—'}<br>${esc(r.word_count)} từ</td>
+      <td>${cell(i, 'idea_summary', true)}</td>
+      <td>${cell(i, 'q0', true)}${cell(i, 'a0', true)}</td>
+      <td>${cell(i, 'q1', true)}${cell(i, 'a1', true)}</td>
+      <td>${cell(i, 'q2', true)}${cell(i, 'a2', true)}</td>
+    </tr>` }).join('')}</tbody>
+  </table></div>`
+}
+
+async function gate(key, value) {
+  const j = await api(`/api/books/${S.slug}/gate`, { method: 'POST', body: JSON.stringify({ key, value }) })
+  S.books = S.books.map((b) => (b.slug === j.book.slug ? j.book : b)); render()
+}
+async function openFile(name) {
+  const j = await api(`/api/books/${S.slug}/file?name=${name}`)
+  const box = $('#filebox')
+  if (name.endsWith('.md')) { box.innerHTML = `<div class="md">${md(j.text || '_(chưa có)_')}</div>`; return }
+  box.innerHTML = `<h3>${name}</h3><textarea id="fedit" rows="10">${esc(j.text)}</textarea>
+    <div class="row" style="margin-top:.5rem"><button class="solid" onclick="saveFile('${name}')">Lưu</button>
+    <span class="muted">Sửa xong chạy lại parse.</span></div>`
+}
+async function saveFile(name) {
+  await api(`/api/books/${S.slug}/file`, { method: 'PUT', body: JSON.stringify({ name, text: $('#fedit').value }) })
+  toast('Đã lưu ' + name)
+}
+
+function render() {
+  sidebar()
+  $('#main').innerHTML = S.mode === 'new' ? viewNew() : viewBook()
+}
+;(async () => {
+  try { S.books = (await api('/api/books')).books } catch (e) { toast(e.message) }
+  if (S.books.length) S.slug = S.books[0].slug; else S.mode = 'new', S.draft = { slug: '', title: '' }
+  render()
+})()
+</script>
+</body>
+</html>
